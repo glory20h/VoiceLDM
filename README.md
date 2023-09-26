@@ -1,6 +1,6 @@
 # VoiceLDM
 
-This is a repository for the paper, [VoiceLDM: Text-to-Speech with Environmental Context]().
+This is a repository for the paper, [VoiceLDM: Text-to-Speech with Environmental Context](https://arxiv.org/abs/2309.13664).
 
 
 ## 🔧 Installation
