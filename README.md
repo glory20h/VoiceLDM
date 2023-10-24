@@ -2,6 +2,10 @@
 
 This is a repository for the paper, [VoiceLDM: Text-to-Speech with Environmental Context](https://arxiv.org/abs/2309.13664).
 
+VoiceLDM is a text-to-speech model that enables the manipulation of speech generation using a natural language description prompt that includes environmental contextual information.
+
+<a href='https://voiceldm.github.io/'><img src='https://img.shields.io/badge/Project-Page-Green'></a>  <a href='https://arxiv.org/abs/2309.13664'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a> [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15iFqvZL4cBeJcQaoq4j2sjnbcUjeaPMo?usp=sharing)
+
 
 ## 🔧 Installation
 ```shell
@@ -82,6 +86,18 @@ optional arguments:
   --seed SEED           random seed for generation
 ```
 
+## 💾 Data
+
+The CSV files for the processed dataset used to train VoiceLDM can be found in [here](https://github.com/glory20h/voiceldm-data). These files include the transcriptions generated using the Whisper model.
+
+### Speech Segments
+- `as_speech_en.csv`
+- `cv.csv`
+- `voxceleb.csv`
+
+### Non-Speech Segments
+- `as_noise.csv`
+- `noise_demand.csv`
 
 ## 🙏 Acknowledgements
 This work would not have been possible without the following repositories:
