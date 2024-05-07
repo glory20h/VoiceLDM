@@ -1,0 +1,44 @@
+output_dir: VoiceLDM-S
+load_from_ckpt_path: 
+checkpoints_total_limit: 2
+mixed_precision: 
+max_train_steps: 1000000
+checkpointing_steps: 20000
+train_batch_size: 8
+gradient_accumulation_steps: 1
+dataloader_num_workers: 8
+
+lr_scheduler: constant
+lr_warmup_steps: 0
+learning_rate: 2.e-5
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_weight_decay: 1.e-2
+adam_epsilon: 1.e-08
+
+max_grad_norm: 1.0
+uncond_desc_prob: 0.1
+uncond_text_prob: 0.1
+add_noise_prob: 0.5
+
+block_out_channels: [128, 256, 384, 640]
+
+paths:
+  cv: "/mnt/work4/datasets/cv-corpus-13/en",
+  as_b: "/mnt/work3/datasets/audioset/balanced_train_segments/audio"
+  as_e: "/mnt/work3/datasets/audioset/eval_segments/audio"
+  as_ub: "/mnt/work3/datasets/audioset/unbalanced_train_segments/audio"
+  voxceleb: "/mnt/datasets/voxcelebs/voxceleb1"
+
+noise_paths:
+  demand: "/mnt/work4/datasets/DEMAND/unzipped",
+  as_b: "/mnt/work3/datasets/audioset/balanced_train_segments/audio"
+  as_e: "/mnt/work3/datasets/audioset/eval_segments/audio"
+  as_ub: "/mnt/work3/datasets/audioset/unbalanced_train_segments/audio"
+
+cv_csv_path1: "data/cv1.csv"
+cv_csv_path2: "data/cv2.csv"
+as_speech_en_csv_path: "data/as_speech_en.csv"
+voxceleb_csv_path: "data/voxceleb.csv"
+as_noise_csv_path: "data/as_noise.csv"
+noise_demand_csv_path: "data/noise_demand.csv"

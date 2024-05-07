@@ -1,15 +1,23 @@
 # VoiceLDM
 
-This is a repository for the paper, [VoiceLDM: Text-to-Speech with Environmental Context](https://arxiv.org/abs/2309.13664).
+This is a repository for the paper, [VoiceLDM: Text-to-Speech with Environmental Context](https://arxiv.org/abs/2309.13664), ICASSP 2024.
 
-VoiceLDM is a text-to-speech model that enables the manipulation of speech generation using a natural language description prompt that includes environmental contextual information.
+<p align="center">
+  <img src="main_figure.png"/>
+</p>
+
+VoiceLDM is an extension of text-to-audio models so that it is also capable of generating linguistically intelligible speech.
+
+[2024/05 Update] I have now added the code for training VoiceLDM! Refer to [Training](#-training) for more details.
 
 <a href='https://voiceldm.github.io/'><img src='https://img.shields.io/badge/Project-Page-Green'></a>  <a href='https://arxiv.org/abs/2309.13664'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a> [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15iFqvZL4cBeJcQaoq4j2sjnbcUjeaPMo?usp=sharing)
 
 
 ## 🔧 Installation
 ```shell
-pip install -r requirements.txt
+pip install git+https://github.com/glory20h/VoiceLDM.git
+cd VoiceLDM
+pip install -e .
 ```
 
 ## 📖 Usage
@@ -46,58 +54,61 @@ It's crucial to appropriately adjust the weights for dual classifier-free guidan
 
 2. Starting with 7 for both `desc_guidance_scale` and `cont_guidance_scale` is a good starting point.
 
-2. If you feel that the generated audio doesn't align well with the provided content prompt, try decreasing the `desc_guidance_scale` and increase the `cont_guidance_scale`.
+3. If you feel that the generated audio doesn't align well with the provided content prompt, try decreasing the `desc_guidance_scale` and increase the `cont_guidance_scale`.
 
-3. If you feel that the generated audio doesn't align well with the provided description prompt, try decreasing the `cont_guidance_scale` and increase the `desc_guidance_scale`.
+4. If you feel that the generated audio doesn't align well with the provided description prompt, try decreasing the `cont_guidance_scale` and increase the `desc_guidance_scale`.
 
 ## ⚙️ Full List of Options
+View the full list of options with the following command:
 ```console
-usage: generate.py [-h] [--desc_prompt DESC_PROMPT] [--cont_prompt CONT_PROMPT] [--audio_prompt AUDIO_PROMPT] [--model_config MODEL_CONFIG] [--ckpt_path CKPT_PATH]
-                   [--output_dir OUTPUT_DIR] [--file_name FILE_NAME] [--num_inference_steps NUM_INFERENCE_STEPS] [--audio_length_in_s AUDIO_LENGTH_IN_S]
-                   [--guidance_scale GUIDANCE_SCALE] [--desc_guidance_scale DESC_GUIDANCE_SCALE] [--cont_guidance_scale CONT_GUIDANCE_SCALE] [--device DEVICE] [--seed SEED]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --desc_prompt DESC_PROMPT, -d DESC_PROMPT
-                        description prompt
-  --cont_prompt CONT_PROMPT, -c CONT_PROMPT
-                        content prompt
-  --audio_prompt AUDIO_PROMPT, -a AUDIO_PROMPT
-                        path to audio file to be used as audio prompt
-  --model_config MODEL_CONFIG
-                        configuration for VoiceLDM. 'm' for VoiceLDM-M and 's' for VoiceLDM-S
-  --ckpt_path CKPT_PATH
-                        checkpoint file path for VoiceLDM
-  --output_dir OUTPUT_DIR
-                        directory to save generated audio
-  --file_name FILE_NAME
-                        filename for the generated audio
-  --num_inference_steps NUM_INFERENCE_STEPS
-                        number of inference steps for DDIM sampling
-  --audio_length_in_s AUDIO_LENGTH_IN_S
-                        duration of the audio for generation
-  --guidance_scale GUIDANCE_SCALE
-                        guidance weight for single classifier-free guidance
-  --desc_guidance_scale DESC_GUIDANCE_SCALE
-                        desc guidance weight for dual classifier-free guidance
-  --cont_guidance_scale CONT_GUIDANCE_SCALE
-                        cont guidance weight for dual classifier-free guidance
-  --device DEVICE       device to use for audio generation
-  --seed SEED           random seed for generation
+python generate.py -h
 ```
+
 
 ## 💾 Data
 
 The CSV files for the processed dataset used to train VoiceLDM can be found in [here](https://github.com/glory20h/voiceldm-data). These files include the transcriptions generated using the Whisper model.
 
 ### Speech Segments
-- `as_speech_en.csv`
-- `cv.csv`
-- `voxceleb.csv`
+- `as_speech_en.csv` (English speech segments from AudioSet)
+- `cv1.csv` (English speech segments from CommonVoice 13.0 en, it has been split into two to meet the file size limitations on GitHub.)
+- `cv2.csv`
+- `voxceleb.csv` (English speech segments from VoxCeleb1)
 
 ### Non-Speech Segments
-- `as_noise.csv`
-- `noise_demand.csv`
+- `as_noise.csv` (Non-speech segments from AudioSet)
+- `noise_demand.csv` (Non-speech segments from DEMAND)
+
+## 🧠 Training
+
+If you wish to train the model by yourself, follow these steps:
+
+1. **Configuration Setup (The trickiest part):**
+    - Navigate to the `configs` folder to find the necessary configuration files. For example, `VoiceLDM-M.yaml` is used for training the VoiceLDM-M model in the paper.
+    - Prepare the CSV files used for training. You can download it [here](https://github.com/glory20h/voiceldm-data).
+    - Examine the YAML file and adjust the `"paths"` and `"noise_paths"` to the root path of your dataset. Also, take a look at the CSV files and ensure that the `file_path` in these CSV files match the actual file path names in your dataset.
+    - Update the paths for `cv_csv_path1`, `cv_csv_path2`, `as_speech_en_csv_path`, `voxceleb_csv_path`, `as_noise_csv_path`, and `noise_demand_csv_path` in the YAML file. You may optionally leave it blank if you do not wish to use the corresponding csv file and training data.
+    - You may also adjust other parameters such as the batch size according to your system's capabilities.
+
+2. **Configure Huggingface Accelerate:**
+    - Set up Accelerate by running:
+        ```shell
+        accelerate config
+        ```
+        This will allow support of CPU, single GPU, and multi-GPU training.
+        Follow the on-screen instructions to configure your hardware settings.
+3. **Start Training:**
+    - Launch the training process with the following example command:
+        ```shell
+        accelerate launch train.py --config config/VoiceLDM-M.yaml
+        ```
+    - Training checkpoints will be automatically saved in the `results` folder.
+
+4. **Running Inference:**
+    - Once training is complete, you can perform inference using the trained model by specifying the checkpoint path. For example:
+        ```shell
+        python generate.py --ckpt_path results/VoiceLDM-M/checkpoints/checkpoint_49/pytorch_model.bin --desc_prompt "She is talking in a park." --cont_prompt "Good morning! How are you feeling today?" 
+        ``` 
 
 ## 🙏 Acknowledgements
 This work would not have been possible without the following repositories:

@@ -325,7 +325,13 @@ class UNetWrapper(nn.Module):
         )
         self.text_encoder = text_encoder
         
-    def forward(self, sample, timestep, text_embed, text_embed_mask, cond):
+    def forward(self, sample, timestep, text_embed, text_embed_mask, cond, training=False):
+        if training:
+            if self.text_encoder is not None:
+                text_embed = self.text_encoder(text_embed)
+
+            text_embed, text_embed_mask = self.durator(text_embed, text_embed_mask.unsqueeze(1))
+
         sample = self.unet(
             sample, 
             timestep, 
