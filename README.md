@@ -14,8 +14,17 @@ VoiceLDM is an extension of text-to-audio models so that it is also capable of g
 
 
 ## 🔧 Installation
+
+### Install directly from GitHub
 ```shell
 pip install git+https://github.com/glory20h/VoiceLDM.git
+```
+
+**OR**
+
+### Install from source
+```shell
+git clone https://github.com/glory20h/VoiceLDM.git
 cd VoiceLDM
 pip install -e .
 ```
